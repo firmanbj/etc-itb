@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" fill="none" stroke="#c4561a" stroke-width="1.2">
+  <!-- single-cylinder engine section: head, valves, piston, con-rod, crank -->
+  <path d="M60 20h180v40H60z"/><path d="M95 60v-30l-14-10M205 60v-30l14-10"/>
+  <path d="M70 60v170M230 60v170" /><path d="M78 60v170M222 60v170" stroke-dasharray="3 3"/>
+  <rect x="82" y="120" width="136" height="70" rx="4"/><path d="M82 136h136M82 146h136"/>
+  <circle cx="150" cy="168" r="10"/>
+  <path d="M150 168l40 150"/><path d="M142 170l38 152M158 166l40 150"/>
+  <circle cx="150" cy="320" r="70" stroke-dasharray="12 4 2 4"/><circle cx="190" cy="318" r="14"/><circle cx="150" cy="320" r="20"/>
+  <path d="M120 80c10-12 20 12 30 0s20 12 30 0" stroke="#e8641a"/>
+  <path d="M10 320h280M150 0v420" stroke-dasharray="14 4 2 4" opacity=".6"/>
+  <text x="12" y="410" font-family="monospace" font-size="11" fill="#c4561a" stroke="none">SECTION A–A · BORE 81 mm</text>
+</svg>

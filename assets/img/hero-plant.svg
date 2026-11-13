@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" fill="none" font-family="IBM Plex Mono, Consolas, monospace">
+  <!-- Thermal power plant line drawing: fuels -> boiler -> steam turbine -> generator -> grid;
+       gas turbine and engine below; flue gas -> CO2 mineralization. Animated flows. -->
+  <defs>
+    <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd166"/><stop offset=".45" stop-color="#ff7a1a"/><stop offset="1" stop-color="#d7263d" stop-opacity="0"/></linearGradient>
+    <linearGradient id="gt" x1="0" x2="1"><stop offset="0" stop-color="#3fa7ff"/><stop offset=".5" stop-color="#ffd166"/><stop offset="1" stop-color="#ff5a1f"/></linearGradient>
+    <style>
+      .ln{stroke:#6fd6ff;stroke-width:1.6;opacity:.75}
+      .lnf{stroke:#6fd6ff;stroke-width:1;opacity:.35}
+      .flow{stroke:#7fe3ff;stroke-width:2.2;stroke-dasharray:6 10;animation:f 1.6s linear infinite}
+      .flow.hot{stroke:#ff9a3c}
+      .flow.co2{stroke:#9be08a}
+      .tx{fill:#cfe9f7;font-size:12px;opacity:.75;letter-spacing:.06em}
+      .tx.s{font-size:10px;opacity:.55}
+      .flame{transform-origin:200px 330px;animation:fk 1.4s ease-in-out infinite alternate}
+      .spin{transform-origin:648px 182px;animation:sp 3s linear infinite}
+      .pis{animation:pi 1s ease-in-out infinite alternate}
+      @keyframes f{to{stroke-dashoffset:-32}}
+      @keyframes fk{from{transform:scaleY(.92) scaleX(1.03)}to{transform:scaleY(1.06) scaleX(.97)}}
+      @keyframes sp{to{transform:rotate(360deg)}}
+      @keyframes pi{to{transform:translateY(14px)}}
+      @media (prefers-reduced-motion:reduce){.flow,.flame,.spin,.pis{animation:none}}
+    </style>
+  </defs>
+
+  <!-- fuel inlets -->
+  <text class="tx" x="18" y="300">NH₃</text><text class="tx" x="18" y="336">H₂</text><text class="tx" x="18" y="372">COAL · BIOMASS</text>
+  <path class="flow" d="M60 296h70M50 332h80M140 368h-10"/>
+
+  <!-- boiler -->
+  <rect class="ln" x="130" y="120" width="140" height="300"/>
+  <path class="lnf" d="M140 130v280M260 130v280M150 140h100M150 150h100M150 160h100M150 170h100M150 180h100M150 190h100"/>
+  <g class="flame"><path d="M165 410c0-40 18-56 22-90 10 22 6 40 14 52 8-20 4-46 18-66 8 32 22 52 22 104z" fill="url(#fl)" opacity=".9"/></g>
+  <text class="tx" x="138" y="440">BOILER</text><text class="tx s" x="138" y="456">T ≈ 1750 °C</text>
+  <!-- burners -->
+  <path class="ln" d="M130 300h-14M130 336h-14M130 372h-14"/>
+
+  <!-- stack & flue gas -->
+  <path class="ln" d="M270 150h40v-10h20v280h-20v-130h-40"/>
+  <rect class="ln" x="340" y="40" width="34" height="380"/>
+  <path class="flow" style="stroke:#9fb3c8" d="M300 165h40M357 40v-30"/>
+  <text class="tx" x="330" y="440">STACK</text>
+  <!-- CO2 to mineralization -->
+  <path class="flow co2" d="M374 110h80v380h60"/>
+  <rect class="ln" x="514" y="460" width="150" height="70"/>
+  <g stroke="#9be08a" stroke-width="1.4" opacity=".85">
+    <path d="M534 500l10-6 10 6v12l-10 6-10-6z"/><path d="M554 500l10-6 10 6v12l-10 6-10-6z"/><path d="M544 482l10-6 10 6v12l-10 6-10-6z"/>
+  </g>
+  <text class="tx" x="584" y="492">CO₂ →</text><text class="tx" x="584" y="510">CaCO₃</text>
+  <text class="tx s" x="514" y="550">MINERALIZATION · FLY ASH</text>
+
+  <!-- steam line to turbine -->
+  <path class="flow hot" d="M200 120V70h360v90"/>
+  <text class="tx s" x="380" y="62">MAIN STEAM · 540 °C · 16.7 MPa</text>
+  <!-- steam turbine HP-IP-LP -->
+  <path class="ln" d="M540 160l60-22v88l-60-22zM600 138l70-26v140l-70-26zM670 112l90-30v200l-90-30z"/>
+  <path class="ln" d="M520 182h340"/>
+  <g class="spin"><path class="lnf" d="M648 160v44M626 182h44M632 166l32 32M664 166l-32 32"/></g>
+  <text class="tx" x="560" y="300">STEAM TURBINE</text>
+  <!-- generator -->
+  <rect class="ln" x="860" y="140" width="110" height="84" rx="6"/>
+  <circle class="ln" cx="915" cy="182" r="26"/><path class="ln" d="M902 182c6-14 20 14 26 0"/>
+  <text class="tx" x="868" y="248">GENERATOR</text>
+  <!-- grid -->
+  <path class="flow" style="stroke:#ffd166" d="M970 182h80"/>
+  <path class="ln" d="M1090 300l-30-190h60l-30 190M1068 150h44M1074 120l-14 30M1106 120l14 30M1080 200l20 30M1100 200l-20 30M1060 110h60"/>
+  <path class="lnf" d="M1060 110q60 40 140 20M1120 110q30 30 80 30"/>
+  <text class="tx" x="1046" y="324">GRID · FLEX</text>
+  <!-- condenser / feedwater loop -->
+  <path class="ln" d="M720 282v60h-120v-20h-40"/>
+  <rect class="ln" x="600" y="342" width="120" height="44"/><path class="lnf" d="M610 352h100M610 364h100M610 376h100"/>
+  <text class="tx s" x="610" y="402">CONDENSER</text>
+  <path class="flow" d="M600 364H450V200h-180"/>
+  <text class="tx s" x="400" y="190">FEEDWATER</text>
+
+  <!-- gas turbine (bottom) -->
+  <g transform="translate(720 410)">
+    <path class="ln" d="M0 30l90-26v104L0 82zM90 4h80v104H90M170 4l110 34v36l-110 34"/>
+    <path d="M100 40c20-16 40 16 60 0v32c-20 16-40-16-60 0z" fill="url(#gt)" opacity=".55"/>
+    <path class="lnf" d="M14 34v44M30 30v52M46 26v60M62 22v68M76 18v76M190 12v88M210 18v76M230 24v64M250 30v52"/>
+    <text class="tx" x="0" y="134">GAS TURBINE · H₂ / NH₃ CO-FIRING</text>
+  </g>
+  <path class="flow" d="M680 446h40"/>
+
+  <!-- reciprocating engine (bottom-left) -->
+  <g transform="translate(40 470)">
+    <rect class="ln" x="0" y="0" width="54" height="50"/>
+    <g class="pis"><rect class="ln" x="10" y="6" width="34" height="16"/><path class="ln" d="M27 22v18"/></g>
+    <circle class="ln" cx="27" cy="62" r="14"/>
+    <path d="M14 0c4-10 10-14 13-22 3 8 9 12 13 22z" fill="url(#fl)" opacity=".7"/>
+    <text class="tx" x="70" y="30">ENGINE · H₂ DUAL-FUEL</text>
+    <text class="tx s" x="70" y="48">DIESEL · PALM OIL · B40</text>
+  </g>
+
+  <!-- CFD colour bar -->
+  <g transform="translate(1110 380)">
+    <rect x="0" y="0" width="12" height="140" fill="url(#cb)"/>
+    <defs><linearGradient id="cb" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#1b2a8f"/><stop offset=".25" stop-color="#1fa3e0"/><stop offset=".5" stop-color="#5fd36b"/><stop offset=".75" stop-color="#ffd23f"/><stop offset="1" stop-color="#e53b2c"/></linearGradient></defs>
+    <text class="tx s" x="18" y="8">1800</text><text class="tx s" x="18" y="74">1000</text><text class="tx s" x="18" y="140">300 K</text>
+  </g>
+</svg>

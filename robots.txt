@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://etc-itb.id/sitemap.xml

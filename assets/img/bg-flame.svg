@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" fill="none" stroke-width="1.2">
+  <!-- co-flow burner with iso-temperature contours -->
+  <g stroke="#e8641a">
+    <path d="M150 360c-40-60-46-150 0-300 46 150 40 240 0 300z"/>
+    <path d="M150 360c-28-50-32-120 0-240 32 120 28 190 0 240z" opacity=".8"/>
+    <path d="M150 360c-16-40-18-90 0-170 18 80 16 130 0 170z" opacity=".6"/>
+  </g>
+  <g stroke="#0d6e9a">
+    <path d="M120 360h60v50h-60zM140 360v50M160 360v50"/>
+    <path d="M90 360h30M180 360h30M90 360v50M210 360v50" stroke-dasharray="4 3"/>
+    <path d="M100 400l-30 0M200 400h30"/>
+  </g>
+  <g font-family="monospace" font-size="10" fill="#0d6e9a">
+    <text x="196" y="120">T = 1950 K</text><text x="196" y="200">1600 K</text><text x="196" y="280">1200 K</text>
+    <text x="8" y="398">AIR</text><text x="138" y="418">NH₃/H₂</text>
+  </g>
+  <path d="M190 116h-36M190 196h-22M190 276h-14" stroke="#0d6e9a" opacity=".6"/>
+</svg>
