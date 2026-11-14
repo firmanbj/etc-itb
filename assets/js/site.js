@@ -114,7 +114,7 @@
     "<div><h4>" + T3("Research", "Riset", "研究") + "</h4><ul>" + AREA_ORDER.map(function (k) { var a = E.areas[k]; return '<li><a href="' + a.page + '">' + T3(esc(a.name.en), esc(a.name.id), esc(a.name.ja)) + "</a></li>"; }).join("") + '<li><a href="facilities.html">' + T3("Facilities", "Fasilitas", "設備") + "</a></li></ul></div>" +
     "<div><h4>" + T3("Lab", "Lab", "研究室") + '</h4><ul><li><a href="people.html">' + T3("Members", "Anggota", "メンバー") + '</a></li><li><a href="pi.html">' + T3("PI & publications", "Ketua & publikasi", "代表者・論文") + '</a></li><li><a href="alumni.html">' + T3("Alumni", "Alumni", "修了生") + '</a></li><li><a href="projects.html">' + T3("Research projects", "Proyek riset", "研究課題") + '</a></li><li><a href="news.html">' + T3("News & gallery", "Berita & galeri", "ニュース・写真") + "</a></li></ul></div>" +
     "<div><h4>" + T3("Connect", "Hubungi", "つながる") + '</h4><ul><li><a href="join.html">' + T3("Prospective students", "Calon mahasiswa", "入室希望の学生") + '</a></li><li><a href="collaborate.html">' + T3("Collaborate", "Kolaborasi", "共同研究") + '</a></li><li><a href="contact.html">' + T3("Contact & directions", "Kontak & lokasi", "連絡先・アクセス") + '</a></li><li><a href="' + esc(L.instagram) + '" target="_blank" rel="noopener">Instagram @etcitb</a></li><li><a href="https://ftmd-itb.id/dr-eng-ir-firman-bagja-juangsa-s-t-m-eng/" target="_blank" rel="noopener">FTMD ITB profile ↗</a></li></ul></div></div>' +
-    '<div class="bottom"><span>© ' + new Date().getFullYear() + ' ENERGY AND THERMOCHEMISTRY LABORATORY · FTMD ITB</span><span>THERMAL SCIENCE AND ENGINEERING RESEARCH GROUP</span></div></div>';
+    '<div class="bottom"><span>© ' + new Date().getFullYear() + ' ENERGY AND THERMOCHEMISTRY LABORATORY · FTMD ITB · <a href="assets/img/photo/CREDITS.txt" style="color:inherit">PHOTO CREDITS</a></span><span>THERMAL SCIENCE AND ENGINEERING RESEARCH GROUP</span></div></div>';
   document.body.appendChild(foot);
   var topb = document.createElement("button"); topb.className = "to-top"; topb.setAttribute("aria-label", "Back to top"); topb.textContent = "↑";
   topb.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
@@ -122,6 +122,28 @@
   window.addEventListener("scroll", function () { topb.classList.toggle("show", window.scrollY > 600); }, { passive: true });
   var burger = $(".burger"), nav = $("#nav");
   burger.addEventListener("click", function () { var o = nav.classList.toggle("open"); burger.setAttribute("aria-expanded", o); document.body.style.overflow = o ? "hidden" : ""; });
+  /* mobile menu: fill exactly the space below the header so every page is reachable */
+  function fitNav() { if (!nav.classList.contains("open")) return; var hb = $(".site-head").getBoundingClientRect().bottom; nav.style.height = Math.max(200, window.innerHeight - hb) + "px"; }
+  burger.addEventListener("click", fitNav); window.addEventListener("resize", fitNav);
+  /* realistic photo layers behind sections (topic-matched per page) */
+  (function () {
+    var P = "assets/img/photo/", R = "assets/img/research/";
+    var sets = {
+      "research-combustion": [P + "blue-flame.jpg", R + "flame-swirl-nh3.jpg", P + "thermal-plant.jpg", P + "gas-turbine.jpg", R + "engine-test-bench.jpg"],
+      "research-chemical-looping": [P + "capture-plant.jpg", R + "lab-experiment-room.jpg", P + "co2-capture.jpg"],
+      "research-ccus": [P + "co2-capture.jpg", P + "capture-plant.jpg", P + "thermal-plant.jpg"],
+      "research-power-systems": [P + "ccgt-plant.jpg", P + "cooling-towers.jpg", P + "gas-turbine.jpg", P + "thermal-plant.jpg"],
+      "facilities": [R + "lab-experiment-room.jpg", R + "engine-test-bench.jpg", P + "blue-flame.jpg"]
+    };
+    var def = [P + "thermal-plant.jpg", P + "gas-turbine.jpg", P + "blue-flame.jpg", P + "ccgt-plant.jpg", P + "co2-capture.jpg", P + "cooling-towers.jpg", P + "capture-plant.jpg"];
+    var page = (location.pathname.split("/").pop() || "index").replace(".html", "") || "index";
+    var list = sets[page] || def, k = page.length % list.length, n = 0;
+    $$("main .section.bp, main .section.white").forEach(function (s, i) {
+      if (s.querySelector("iframe, form") || (i % 2 && !s.classList.contains("bp"))) return;
+      var d = document.createElement("div"); d.className = "sec-photo " + (n % 2 ? "l" : "r"); d.setAttribute("aria-hidden", "true");
+      d.style.backgroundImage = "url('" + list[(k + n) % list.length] + "')"; s.insertBefore(d, s.firstChild); n++;
+    });
+  })();
 
   /* ---------- renderers ---------- */
   var R = {};

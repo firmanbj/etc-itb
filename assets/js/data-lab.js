@@ -81,7 +81,7 @@ ETC.pi = {
 ETC.members = [
   { name: "Adi Prismantoko", level: "S3", area: "comb", topic: { en: "Coal–biomass–ammonia co-firing", id: "Co-firing batubara–biomassa–amonia", ja: "石炭・バイオマス・アンモニア混焼" } },
   { name: "Ratna Dian Nabila", level: "S3", area: "comb", topic: { en: "Optical NH₃ and low-carbon gas combustion in a constant-volume chamber", id: "Pembakaran optik NH₃ dan gas rendah karbon di ruang bakar volume konstan", ja: "定容燃焼容器におけるNH₃・低炭素ガスの光学燃焼計測" } },
-  { name: "Roby Pratama Sitepu", level: "S3", area: "power", topic: { en: "Digital twin for non-carbon fuel combustion", id: "Digital twin untuk pembakaran bahan bakar non-karbon", ja: "非炭素燃料燃焼のデジタルツイン" } },
+  { name: "Roby Pratama Sitepu", level: "S3", area: "comb", topic: { en: "Hydrogen and cracked-ammonia combustion in gas turbine combustors: flame stability, NOx and CFD-based design", id: "Pembakaran hidrogen dan amonia terurai pada ruang bakar turbin gas: kestabilan nyala, NOx, dan desain berbasis CFD", ja: "ガスタービン燃焼器における水素・分解アンモニア燃焼：火炎安定性、NOx、CFDによる設計" } },
   { name: "Ika Yuliyani", level: "S3", area: "comb", topic: { en: "Hydrogen–natural gas co-firing in gas engines", id: "Co-firing hidrogen–gas alam pada mesin gas", ja: "ガスエンジンにおける水素・天然ガス混焼" } },
   { name: "Reza Setiawan", level: "S3", area: "loop", topic: { en: "Green hydrogen from geothermal energy", id: "Hidrogen hijau dari energi panas bumi", ja: "地熱エネルギーによるグリーン水素製造" } },
   { name: "Daniel Ikun Paa", level: "S3", area: "ccus", topic: { en: "Calcium looping–CSP with natural sorbents from West Timor", id: "Calcium looping–CSP dengan sorben alami Timor Barat", ja: "西ティモール産天然吸収材によるカルシウムルーピング–CSP" } },

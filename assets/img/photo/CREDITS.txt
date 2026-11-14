@@ -1,0 +1,9 @@
+Background photos from Wikimedia Commons (resized). Keep this attribution.
+thermal-plant.jpg  - "Paiton Java Indonesia Paiton-thermal-power-plant-01.jpg", CC BY-SA 3.0
+ccgt-plant.jpg     - "Kazerun Combined Cycle Power Plant 1.jpg", CC0
+gas-turbine.jpg    - "Axial compressor rotor of a gas turbine, Deutsches Museum.jpg", CC0
+blue-flame.jpg     - "Gas Stove Burner Blue Flame (28409479226).jpg", CC BY 2.0
+co2-capture.jpg    - "Boundary Dam capture unit CO2 compressor.jpg", CC BY 4.0
+capture-plant.jpg  - "Carbon capture 32.jpg", CC BY-SA 4.0
+cooling-towers.jpg - "Cooling towers of a nuclear power plant.jpg", CC BY-SA 4.0
+Source pages: https://commons.wikimedia.org/wiki/File:<filename>
