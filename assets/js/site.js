@@ -160,12 +160,16 @@
     var M = { en: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], id: ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"], ja: null };
     function fmt(d) { var p = String(d).split("-"); if (LANG === "ja") return p[0] + "年" + (+p[1]) + "月"; return (M[LANG] || M.en)[+p[1] - 1] + " " + p[0]; }
     el.innerHTML = (E.news || []).slice(0, lim).map(function (n) {
-      return '<article class="news-item ' + esc(n.kind) + '"><div class="date">' + fmt(n.date) + " · " + esc(n.kind) + "</div><h3>" + esc(tr(n.title)) + "</h3><p>" + esc(tr(n.text)) + "</p>" + (n.link ? '<a class="more" href="' + esc(n.link) + '">' + esc(u("explore")) + " →</a>" : "") + "</article>";
+      var imgs = [].concat(n.img || []);
+      var pics = imgs.length ? '<div class="news-pics">' + imgs.map(function (s) { return '<a href="' + esc(s) + '" target="_blank" rel="noopener"><img loading="lazy" src="' + esc(s) + '" alt="' + esc(tr(n.title)) + '"></a>'; }).join("") + "</div>" : "";
+      return '<article class="news-item ' + esc(n.kind) + (imgs.length ? " has-pics" : "") + '">' + pics + '<div class="date">' + fmt(n.date) + " · " + esc(n.kind) + "</div><h3>" + esc(tr(n.title)) + "</h3><p>" + esc(tr(n.text)) + "</p>" + (n.link ? '<a class="more" href="' + esc(n.link) + '">' + esc(u("explore")) + " →</a>" : "") + "</article>";
     }).join("");
   };
 
+  /* member photo = assets/img/people/<name-in-lowercase-with-dashes>.jpg ; missing -> placeholder.svg */
+  function slug(s) { return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
   function personHtml(m) {
-    return '<div class="person" data-lv="' + m.level + '" data-area="' + m.area + '"><span class="avatar ' + m.area + '" aria-hidden="true">' + esc(initials(m.name)) + '</span><div><span class="lvl">' + esc(u(m.level)) + "</span><b>" + esc(m.name) + "</b><p>" + esc(tr(m.topic)) + '</p><div style="margin-top:6px">' + tagHtml([m.area]) + "</div></div></div>";
+    return '<div class="person" data-lv="' + m.level + '" data-area="' + m.area + '"><img class="photo ' + m.area + '" loading="lazy" alt="' + esc(m.name) + '" src="' + esc(m.photo || ("assets/img/people/" + slug(m.name) + ".jpg")) + '" onerror="this.onerror=null;this.src=\'assets/img/people/placeholder.svg\'"><div><span class="lvl">' + esc(u(m.level)) + "</span><b>" + esc(m.name) + "</b><p>" + esc(tr(m.topic)) + '</p><div style="margin-top:6px">' + tagHtml([m.area]) + "</div></div></div>";
   }
   R.members = function (el) {
     var topic = el.getAttribute("data-topic"), M = (E.members || []).filter(function (m) { return !topic || m.area === topic; });
