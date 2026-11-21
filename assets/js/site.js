@@ -161,8 +161,9 @@
     function fmt(d) { var p = String(d).split("-"); if (LANG === "ja") return p[0] + "年" + (+p[1]) + "月"; return (M[LANG] || M.en)[+p[1] - 1] + " " + p[0]; }
     el.innerHTML = (E.news || []).slice(0, lim).map(function (n) {
       var imgs = [].concat(n.img || []);
+      var many = imgs.length > 2;
       var pics = imgs.length ? '<div class="news-pics">' + imgs.map(function (s) { return '<a href="' + esc(s) + '" target="_blank" rel="noopener"><img loading="lazy" src="' + esc(s) + '" alt="' + esc(tr(n.title)) + '"></a>'; }).join("") + "</div>" : "";
-      return '<article class="news-item ' + esc(n.kind) + (imgs.length ? " has-pics" : "") + '">' + pics + '<div class="date">' + fmt(n.date) + " · " + esc(n.kind) + "</div><h3>" + esc(tr(n.title)) + "</h3><p>" + esc(tr(n.text)) + "</p>" + (n.link ? '<a class="more" href="' + esc(n.link) + '">' + esc(u("explore")) + " →</a>" : "") + "</article>";
+      return '<article class="news-item ' + esc(n.kind) + (imgs.length ? " has-pics" : "") + (many ? " many-pics" : "") + '">' + pics + '<div class="date">' + fmt(n.date) + " · " + esc(n.kind) + "</div><h3>" + esc(tr(n.title)) + "</h3><p>" + esc(tr(n.text)) + "</p>" + (n.link ? '<a class="more" href="' + esc(n.link) + '">' + esc(u("explore")) + " →</a>" : "") + "</article>";
     }).join("");
   };
 
@@ -356,9 +357,95 @@
   root.setAttribute("lang", LANG);
   renderAll();
 
+  /* ================= NEWS FROM GOOGLE SHEET (simple CMS) =================
+     Set ETC.lab.newsSheet (data-lab.js) to the "Publish to web → CSV" link of the
+     Google Sheet that receives the news Google Form. Rows are added on top of
+     the static ETC.news list. See NEWS-SYSTEM.txt for the setup. */
+  function parseCSV(t) {
+    var rows = [], row = [], f = "", q = false;
+    for (var i = 0; i < t.length; i++) {
+      var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true; else if (c === ",") { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; }
+      else f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows;
+  }
+  function driveImg(s) {
+    s = s.trim(); if (!s) return "";
+    var m = s.match(/[?&]id=([\w-]{20,})/) || s.match(/\/d\/([\w-]{20,})/);
+    return m ? "https://lh3.googleusercontent.com/d/" + m[1] + "=w1200" : s;
+  }
+  function normDate(s) {
+    s = (s || "").trim(); var m;
+    if ((m = s.match(/^(\d{4})-(\d{1,2})/))) return m[1] + "-" + ("0" + m[2]).slice(-2);
+    if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return m[3] + "-" + ("0" + m[2]).slice(-2); /* d/m/yyyy (Indonesian locale) */
+    var d = new Date(s); return isNaN(d) ? "" : d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+  }
+  function sheetToNews(rows) {
+    var H = (rows.shift() || []).map(function (h) { return h.toLowerCase(); });
+    function col(re, lang) { for (var i = 0; i < H.length; i++) if (re.test(H[i]) && (lang ? H[i].indexOf("(" + lang + ")") >= 0 : !/\((en|id|ja)\)/.test(H[i]))) return i; return -1; }
+    var C = { date: col(/tanggal|date/), ts: col(/timestamp|stempel/), kind: col(/jenis|kind|type|kategori/), photo: col(/foto|photo|image|gambar|poster/), link: col(/link|tautan|url/), show: col(/tampil|publish|show|status/) };
+    ["title", "text"].forEach(function (k) {
+      var re = k === "title" ? /judul|title/ : /deskripsi|description|isi|text/;
+      C[k] = col(re); ["en", "id", "ja"].forEach(function (l) { C[k + l] = col(re, l); });
+    });
+    var KIND = { penghargaan: "award", award: "award", rekrutmen: "recruit", recruit: "recruit", alumni: "alumni", hibah: "grant", grant: "grant", kegiatan: "event", event: "event", berita: "news", news: "news" };
+    function g(r, i) { return i >= 0 ? (r[i] || "").trim() : ""; }
+    return rows.filter(function (r) { return r.join("").trim() && !/^(no|tidak|hide|sembunyi)/i.test(g(r, C.show)); }).map(function (r) {
+      function tri(k) { var base = g(r, C[k]); var o = { en: g(r, C[k + "en"]) || base, id: g(r, C[k + "id"]) || base, ja: g(r, C[k + "ja"]) || g(r, C[k + "en"]) || base }; return o; }
+      var kind = (g(r, C.kind).toLowerCase().split(/[^a-z]/)[0]) || "news";
+      return { date: normDate(g(r, C.date)) || normDate(g(r, C.ts)), kind: KIND[kind] || "news", title: tri("title"), text: tri("text"), link: g(r, C.link) || undefined, img: g(r, C.photo).split(/[\s,]+/).map(driveImg).filter(Boolean), live: true };
+    }).filter(function (n) { return n.title.en || n.title.id; });
+  }
+  var SHEET = L.newsSheet;
+  if (SHEET && $("[data-render=news]")) {
+    var cached = null; try { cached = JSON.parse(sessionStorage.getItem("etc-news") || "null"); } catch (e) {}
+    var merge = function (live) {
+      var seen = {}; E.news = live.concat((E._staticNews = E._staticNews || E.news.slice())).filter(function (n) { var k = tr(n.title); if (seen[k]) return false; seen[k] = 1; return true; });
+      E.news.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+      renderAll();
+    };
+    if (cached) merge(cached);
+    fetch(SHEET + (SHEET.indexOf("?") < 0 ? "?" : "&") + "t=" + Date.now()).then(function (r) { return r.text(); }).then(function (t) {
+      var live = sheetToNews(parseCSV(t)); try { sessionStorage.setItem("etc-news", JSON.stringify(live)); } catch (e) {}
+      merge(live);
+    }).catch(function () {});
+  }
+
+  /* ================= MOTION: heat gauge, embers, staggered reveals ================= */
   var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  (function () {
+    var hb = document.createElement("div"); hb.className = "heatbar"; document.body.appendChild(hb);
+    function upd() { var h = document.documentElement.scrollHeight - innerHeight; hb.style.transform = "scaleX(" + (h > 0 ? scrollY / h : 0) + ")"; }
+    addEventListener("scroll", upd, { passive: true }); upd();
+    $$(".grid,.people,.news,.subs,.figs,.equip").forEach(function (g) { if (!g.classList.contains("reveal")) g.classList.add("reveal-stagger"); });
+    var hero = $(".hero");
+    if (!hero || still) return;
+    var cv = document.createElement("canvas"); cv.className = "embers"; cv.setAttribute("aria-hidden", "true"); hero.insertBefore(cv, $(".wrap", hero));
+    var ctx = cv.getContext("2d"), P = [], W, H, dpr = Math.min(2, devicePixelRatio || 1), run = true;
+    function size() { W = cv.width = hero.offsetWidth * dpr; H = cv.height = hero.offsetHeight * dpr; cv.style.width = hero.offsetWidth + "px"; cv.style.height = hero.offsetHeight + "px"; }
+    function spawn() { return { x: W * (.45 + Math.random() * .55), y: H + Math.random() * 40, r: (1 + Math.random() * 2.4) * dpr, vy: (.35 + Math.random() * .9) * dpr, vx: (Math.random() - .5) * .4 * dpr, life: 0, max: 260 + Math.random() * 240, w: Math.random() * 6.28 }; }
+    size(); addEventListener("resize", size); for (var i = 0; i < 46; i++) { var p = spawn(); p.y = Math.random() * H; P.push(p); }
+    new IntersectionObserver(function (e) { run = e[0].isIntersecting; if (run) loop(); }).observe(hero);
+    function loop() {
+      if (!run) return; ctx.clearRect(0, 0, W, H);
+      P.forEach(function (p, i) {
+        p.life++; p.w += .03; p.x += p.vx + Math.sin(p.w) * .35 * dpr; p.y -= p.vy;
+        var t = p.life / p.max, a = Math.max(0, Math.sin(Math.PI * Math.min(1, t)));
+        var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+        g.addColorStop(0, "rgba(235,246,255," + .95 * a + ")"); g.addColorStop(.35, "rgba(79,195,247," + .55 * a + ")"); g.addColorStop(1, "rgba(21,101,192,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 4, 0, 6.29); ctx.fill();
+        if (t >= 1 || p.y < -20) P[i] = spawn();
+      });
+      requestAnimationFrame(loop);
+    }
+    loop();
+  })();
   if ("IntersectionObserver" in window && !still) {
     var io = new IntersectionObserver(function (en) { en.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } }); }, { threshold: .12 });
-    $$(".reveal").forEach(function (r) { io.observe(r); });
-  } else { $$(".reveal").forEach(function (r) { r.classList.add("in"); }); }
+    $$(".reveal,.reveal-stagger").forEach(function (r) { io.observe(r); });
+  } else { $$(".reveal,.reveal-stagger").forEach(function (r) { r.classList.add("in"); }); }
 })();
