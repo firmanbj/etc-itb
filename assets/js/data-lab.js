@@ -17,6 +17,10 @@ ETC.lab = {
   shortlink: "https://bit.ly/ETCLab",
   recruitForm: "https://forms.office.com/Pages/ResponsePage.aspx?id=gxFu22VMXECCznzVP6bp3E9kBs3ELD1Hk3EpI_g4YpFUNTdFOUdSWkNNNzVVOFFPVVgzMEUxMzFLRi4u",
   recruitOpen: true,
+  /* NEWS CMS: paste the Google Sheet "Publish to web → CSV" link here (see NEWS-SYSTEM.txt). Empty = only the news below. */
+  newsSheet: "",
+  /* link to the Google Form used to submit news (opened from news.html "Submit news" for lab admins) */
+  newsForm: "",
   recruitLabel: { en: "Research Team 2026 applications are open", id: "Pendaftaran Tim Peneliti 2026 dibuka", ja: "2026年度 研究チーム募集中" }
 };
 
@@ -104,6 +108,11 @@ ETC.members = [
 
 /* kind: award | recruit | alumni | grant | event | news */
 ETC.news = [
+  { date: "2026-11", kind: "event", img: ["assets/img/news/diaspora-2026-kuliah-umum-doc1.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc2.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc3.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc4.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc5.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc6.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc7.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc8.jpg"],
+    title: { en: "Public lecture held: Prof. Muhammad Aziz on carbon-free energy systems", id: "Kuliah umum terlaksana: Prof. Muhammad Aziz tentang sistem energi bebas karbon", ja: "公開講義を開催：アジズ教授が語るカーボンフリーエネルギーシステム" },
+    text:  { en: "On Tuesday 17 November 2026, the Diaspora Berdampak public lecture took place at the FTMD Seminar Room, ITB. Prof. Dr.Eng. Muhammad Aziz (Tohoku University) presented “Decarbonizing the Future: from Materials to Systems — Building Research Frontiers in Carbon-Free Energy Systems” to students, lecturers and researchers of FTMD, moderated by Dr. Firman Bagja Juangsa. The session closed with a group photo. Next: the sharing session “Research and Lab Management” on Wednesday 25 November 2026, 13.30–15.30 WIB.",
+             id: "Pada Selasa, 17 November 2026, kuliah umum Diaspora Berdampak terlaksana di Ruang Seminar FTMD ITB. Prof. Dr.Eng. Muhammad Aziz (Tohoku University) membawakan materi “Decarbonizing the Future: from Materials to Systems — Building Research Frontiers in Carbon-Free Energy Systems” di hadapan mahasiswa, dosen, dan peneliti FTMD, dimoderatori Dr. Firman Bagja Juangsa. Acara ditutup dengan foto bersama. Selanjutnya: sharing session “Research and Lab Management” pada Rabu, 25 November 2026, pukul 13.30–15.30 WIB.",
+             ja: "2026年11月17日（火）、Diaspora Berdampak公開講義がITB FTMDセミナー室で開催されました。東北大学のムハンマド・アジズ教授が「Decarbonizing the Future: from Materials to Systems — Building Research Frontiers in Carbon-Free Energy Systems」と題して、FTMDの学生・教員・研究者に講演し、司会はフィルマン・バグジャ・ジュアンサ博士が務めました。最後に集合写真を撮影しました。次回はシェアリングセッション「Research and Lab Management」（11月25日（水）13:30～15:30）です。" } },
   { date: "2026-11", kind: "event", img: ["assets/img/news/diaspora-2026-kuliah-umum.jpg", "assets/img/news/diaspora-2026-sharing.jpg"],
     title: { en: "Diaspora Berdampak 2026: Prof. Muhammad Aziz (Tohoku University) visits ETC Lab", id: "Diaspora Berdampak 2026: Prof. Muhammad Aziz (Tohoku University) berkunjung ke ETC Lab", ja: "Diaspora Berdampak 2026：東北大学 ムハンマド・アジズ教授が来訪" },
     text:  { en: "Under the Diaspora Berdampak Batch I 2026 grant (Diktisaintek), Prof. Dr.Eng. Muhammad Aziz, Distinguished Professor at Tohoku University, is visiting FTMD ITB from 16 to 27 November 2026 for joint research, co-supervision of doctoral students and joint publications. Public lecture “Decarbonized Energy Systems” (clean hydrogen, chemical looping, ammonia as an energy carrier, Indonesia's energy transition): Tuesday 17 Nov, 09.00–11.00 WIB. Sharing session “Research and Lab Management”: Wednesday 25 Nov, 13.30–15.30 WIB. Both at the FTMD Seminar Room, 2nd floor, moderated by Dr. Firman.",
