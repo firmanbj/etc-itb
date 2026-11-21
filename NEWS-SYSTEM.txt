@@ -1,0 +1,60 @@
+ETC LAB WEBSITE - NEWS SYSTEM (Google Form -> Google Sheet -> website)
+=====================================================================
+After a one-time setup (about 15 minutes), you add news by filling a Google Form
+(on your phone or laptop): photo + description. It appears on etc-itb.id
+(News page and Home) within about 5 minutes. No GitHub upload is needed for news.
+
+ONE-TIME SETUP
+--------------
+1. Create a Google Form (forms.google.com) named "ETC Lab - News". Add these
+   questions. The titles matter: the website recognises these words.
+
+   Title (Indonesian ok)           Type            Notes
+   ------------------------------  --------------  ------------------------------
+   Tanggal kegiatan                Date            required
+   Jenis                           Multiple choice Kegiatan / Penghargaan / Hibah /
+                                                   Alumni / Rekrutmen / Berita
+   Judul                           Short answer    required
+   Deskripsi                       Paragraph       required
+   Foto                            File upload     images only, max 5 files, 10 MB
+   Link                            Short answer    optional (e.g. registration page)
+   Judul (EN)                      Short answer    optional English title
+   Deskripsi (EN)                  Paragraph       optional English text
+   Judul (JA) / Deskripsi (JA)     optional Japanese
+
+   If the English or Japanese fields are left empty, the Indonesian text is shown in
+   every language.
+
+2. In the Form, open Responses -> "Link to Sheets" to create the response sheet.
+
+3. Make the photos viewable on the website:
+   - In Google Drive, find the folder "ETC Lab - News (File responses)".
+   - Share -> General access -> "Anyone with the link" -> Viewer.
+   (Only the news photos in this folder become public.)
+
+4. Publish the sheet as CSV:
+   - In the Sheet: File -> Share -> Publish to web.
+   - Choose the responses tab (e.g. "Form Responses 1"), format
+     "Comma-separated values (.csv)", then Publish.
+   - Copy the link (it looks like https://docs.google.com/spreadsheets/d/e/.../pub?gid=...&single=true&output=csv)
+
+5. Open assets/js/data-lab.js and paste the link:
+       newsSheet: "https://docs.google.com/spreadsheets/d/e/....../pub?...output=csv",
+   Optionally paste the Form link in newsForm: "...".
+   Upload data-lab.js to GitHub once. Setup is done.
+
+DAILY USE
+---------
+- Add news: fill the Form. Live in about 5 minutes (Google refreshes the CSV every few minutes).
+- Edit or fix typos: edit the cell in the Sheet.
+- Hide an item: add a column named "Tampilkan" to the Sheet and type "tidak" in that row.
+- The old news written in data-lab.js (ETC.news) still shows below or among the
+  Sheet news, sorted by date.
+- Tip: crop photos to landscape or 4:5 posters. Poster images work well.
+
+HOW IT WORKS (technical)
+------------------------
+The website (assets/js/site.js, section "NEWS FROM GOOGLE SHEET") downloads the
+published CSV in the visitor's browser, reads the columns by their titles, converts
+Drive file links to direct image links, and merges the rows with the static list.
+If Google is unreachable, the static news still shows.
