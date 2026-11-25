@@ -49,7 +49,7 @@ ETC.live = {
      b) posts: paste links of posts to show (official Instagram embeds).
      If both are empty, a "Follow @etcitb" card is shown.                     */
   instagram: {
-    beholdFeedId: "",
+    beholdFeedId: "3NvMMvv98x1dSWOvKmxy",
     widgetIframe: "",
     posts: []
   }
