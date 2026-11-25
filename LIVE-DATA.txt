@@ -1,0 +1,38 @@
+ETC LAB WEBSITE - LIVE (AUTO-UPDATING) DATA
+============================================
+All settings are in assets/js/data-lab.js, block "ETC.live".
+The data loads in each visitor's browser and is cached for 12 hours (cacheHours).
+If a service is unreachable, the block hides itself and the rest of the page still works.
+
+1) PUBLICATIONS + CITATIONS (pi.html -> Publications)                 WORKING NOW
+   Source: OpenAlex (free open index of Scopus/WoS-indexed journals, linked to ORCID 0000-0002-3117-843X).
+   Shows: works, citations, h-index, i10-index, citations per year, and the latest or most-cited papers.
+   Google Scholar, Scopus and Web of Science do not allow other websites to read them,
+   so the page links to those profiles instead.
+   - New papers appear automatically once OpenAlex indexes them (usually 1-4 weeks after publication).
+   - If a paper is missing or attributed to another profile: log in at https://openalex.org with ORCID
+     and request a fix. Profile IDs used: authors: ["A5028303429", ...].
+   - The curated list below it (data-records.js) stays as the complete, hand-checked record.
+
+2) RESEARCH RADAR (news.html + each research theme page)              WORKING NOW
+   Newest peer-reviewed journal articles worldwide (last 180 days) on the lab's themes.
+   A paper is shown only if its TITLE contains one of the phrases in ETC.live.radar.
+   To tune it, edit the phrase lists, e.g. add "ammonia engine" to comb.
+
+3) INSTAGRAM @etcitb (news.html -> "From our Instagram")              NEEDS 10-MIN SETUP
+   Instagram does not let websites read a feed without an account token. Free options:
+   A. Automatic feed (recommended): Behold.so
+      1. In the Instagram app, switch @etcitb to a Professional account (Creator or Business). This is free.
+      2. Sign up at https://behold.so and connect @etcitb.
+      3. Create a feed and copy its Feed ID.
+      4. Paste it in data-lab.js: instagram: { beholdFeedId: "PASTE-ID", ... }
+      New posts then appear automatically.
+      (LightWidget or SnapWidget also work: paste their iframe URL in widgetIframe.)
+   B. Hand-picked posts (no sign-up): copy post links into
+      posts: ["https://www.instagram.com/p/XXXXXXXX/", "https://www.instagram.com/p/YYYYYYYY/"]
+   Until one is set, a "Follow @etcitb" card is shown.
+
+OPTIONAL: OpenAlex API key
+   Without a key, OpenAlex gives each network a small free daily budget. Visitors on the
+   same campus network share it. The 12-hour cache keeps usage low. If the blocks ever stay
+   empty, get a free key at https://openalex.org/settings/api and paste it in openalexKey: "".
