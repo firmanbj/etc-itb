@@ -24,6 +24,37 @@ ETC.lab = {
   recruitLabel: { en: "Research Team 2026 applications are open", id: "Pendaftaran Tim Peneliti 2026 dibuka", ja: "2026年度 研究チーム募集中" }
 };
 
+/* ===================== LIVE DATA (updates automatically) =====================
+   Publications + citation metrics come from OpenAlex (free, open index that
+   covers Scopus / Web of Science journals, linked to ORCID). Google Scholar,
+   Scopus and WoS do not allow websites to read them directly.            */
+ETC.live = {
+  /* OpenAlex author IDs for Dr. Firman (main profile + small split profiles) */
+  authors: ["A5028303429", "A5140180180", "A5043207178"],
+  /* optional free key from https://openalex.org/settings/api (raises the daily limit) */
+  openalexKey: "",
+  /* hours to keep live data in the visitor's browser before asking again */
+  cacheHours: 12,
+  /* "Research radar": newest papers worldwide on each ETC theme.
+     A paper is shown only if its TITLE contains one of these phrases (edit freely). */
+  radar: {
+    comb:  ["ammonia combustion", "ammonia flame", "ammonia co-firing", "ammonia cofiring", "hydrogen co-firing", "hydrogen combustion", "cracked ammonia", "ammonia/hydrogen", "biomass co-firing", "dual-fuel engine"],
+    loop:  ["chemical looping", "methane pyrolysis", "turquoise hydrogen", "sustainable aviation fuel", "oxygen carrier", "fischer-tropsch"],
+    ccus:  ["mineral carbonation", "co2 mineralization", "co₂ mineralization", "carbon mineralization", "fly ash carbonation", "carbonation of fly ash", "accelerated carbonation", "slag carbonation"],
+    power: ["flexible operation", "power plant flexibility", "coal-fired power", "coal power plant", "thermal power plant", "load cycling", "boiler dynamic", "co-firing power plant"]
+  },
+  /* INSTAGRAM @etcitb — choose ONE:
+     a) widget: paste the embed code URL from Behold.so / LightWidget / SnapWidget
+        (auto-updating feed), e.g. "https://w.behold.so/widget.js" + feedId below;
+     b) posts: paste links of posts to show (official Instagram embeds).
+     If both are empty, a "Follow @etcitb" card is shown.                     */
+  instagram: {
+    beholdFeedId: "",
+    widgetIframe: "",
+    posts: []
+  }
+};
+
 ETC.areas = {
   comb: {
     page: "research-combustion.html", img: "assets/img/research/flame-swirl-nh3.jpg",
@@ -108,6 +139,11 @@ ETC.members = [
 
 /* kind: award | recruit | alumni | grant | event | news */
 ETC.news = [
+  { date: "2026-11", kind: "event", img: ["assets/img/news/diaspora-2026-sharing-doc1.jpg","assets/img/news/diaspora-2026-sharing-doc2.jpg","assets/img/news/diaspora-2026-sharing-doc3.jpg","assets/img/news/diaspora-2026-sharing-doc4.jpg","assets/img/news/diaspora-2026-sharing-doc5.jpg","assets/img/news/diaspora-2026-sharing-doc6.jpg","assets/img/news/diaspora-2026-sharing-doc7.jpg","assets/img/news/diaspora-2026-sharing-doc8.jpg","assets/img/news/diaspora-2026-sharing.jpg"],
+    title: { en: "Sharing session held: “Research and Lab Management” with Prof. Muhammad Aziz", id: "Sharing session terlaksana: “Research and Lab Management” bersama Prof. Muhammad Aziz", ja: "シェアリングセッション開催：アジズ教授による「Research and Lab Management」" },
+    text:  { en: "On Wednesday 25 November 2026 (13.30–15.30 WIB), the second Diaspora Berdampak event took place at the FTMD Seminar Room, ITB. Prof. Dr.Eng. Muhammad Aziz (Tohoku University) shared his experience in managing research and running a laboratory, followed by an open discussion with lecturers and graduate students of FTMD. The session was moderated by Dr. Firman Bagja Juangsa and closed with a group photo. It concluded the series of public events of Prof. Aziz's visit to FTMD ITB (16–27 November 2026).",
+             id: "Pada Rabu, 25 November 2026 (13.30–15.30 WIB), kegiatan kedua Diaspora Berdampak terlaksana di Ruang Seminar FTMD ITB. Prof. Dr.Eng. Muhammad Aziz (Tohoku University) berbagi pengalaman dalam manajemen riset dan pengelolaan laboratorium, dilanjutkan diskusi terbuka bersama dosen dan mahasiswa pascasarjana FTMD. Acara dimoderatori Dr. Firman Bagja Juangsa dan ditutup dengan foto bersama. Kegiatan ini menutup rangkaian acara publik kunjungan Prof. Aziz ke FTMD ITB (16–27 November 2026).",
+             ja: "2026年11月25日（水）13:30～15:30、Diaspora Berdampakの第2回イベントをITB FTMDセミナー室で開催しました。東北大学のムハンマド・アジズ教授が研究マネジメントと研究室運営の経験を共有し、FTMDの教員・大学院生とオープンディスカッションを行いました。司会はフィルマン・バグジャ・ジュアンサ博士が務め、最後に集合写真を撮影しました。本セッションをもって、アジズ教授のFTMD ITB訪問（2026年11月16日～27日）の公開行事は終了しました。" } },
   { date: "2026-11", kind: "event", img: ["assets/img/news/diaspora-2026-kuliah-umum-doc1.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc2.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc3.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc4.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc5.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc6.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc7.jpg","assets/img/news/diaspora-2026-kuliah-umum-doc8.jpg"],
     title: { en: "Public lecture held: Prof. Muhammad Aziz on carbon-free energy systems", id: "Kuliah umum terlaksana: Prof. Muhammad Aziz tentang sistem energi bebas karbon", ja: "公開講義を開催：アジズ教授が語るカーボンフリーエネルギーシステム" },
     text:  { en: "On Tuesday 17 November 2026, the Diaspora Berdampak public lecture took place at the FTMD Seminar Room, ITB. Prof. Dr.Eng. Muhammad Aziz (Tohoku University) presented “Decarbonizing the Future: from Materials to Systems — Building Research Frontiers in Carbon-Free Energy Systems” to students, lecturers and researchers of FTMD, moderated by Dr. Firman Bagja Juangsa. The session closed with a group photo. Next: the sharing session “Research and Lab Management” on Wednesday 25 November 2026, 13.30–15.30 WIB.",

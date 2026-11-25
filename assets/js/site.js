@@ -342,6 +342,101 @@
     $$("iframe.embed").forEach(function (f) { if (f.contentWindow === e.source) f.style.height = Math.max(300, d.etcEmbedHeight + 4) + "px"; });
   });
 
+  /* ======================= LIVE DATA (OpenAlex, Instagram) =======================
+     Fetched in the visitor's browser, cached for ETC.live.cacheHours, and re-used
+     when the language changes. If a service is unreachable the block hides itself
+     and the static content on the page stays.                                   */
+  var LV = E.live || {}, OA = "https://api.openalex.org/", MEM = {};
+  function oa(path) {
+    var url = OA + path + (LV.openalexKey ? "&api_key=" + encodeURIComponent(LV.openalexKey) : "");
+    if (MEM[url]) return MEM[url];
+    var key = "etc-oa:" + path, ttl = (LV.cacheHours || 12) * 36e5;
+    try { var c = JSON.parse(localStorage.getItem(key) || "null"); if (c && Date.now() - c.t < ttl) return (MEM[url] = Promise.resolve(c.d)); } catch (e) {}
+    function get(n) { return fetch(url).then(function (r) { if (r.status === 429 && n < 3) return new Promise(function (ok) { setTimeout(ok, 1200 * (n + 1)); }).then(function () { return get(n + 1); }); if (!r.ok) throw new Error(r.status); return r.json(); }); }
+    return (MEM[url] = get(0).then(function (d) {
+      try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), d: d })); } catch (e) {}
+      return d;
+    }));
+  }
+  function L3(en, id, ja) { return { en: en, id: id, ja: ja }[LANG] || en; }
+  function fmtN(n) { return Number(n || 0).toLocaleString(LANG === "id" ? "id-ID" : LANG === "ja" ? "ja-JP" : "en-US"); }
+  function workHtml(w, opt) {
+    var me = (LV.authors || []).map(function (a) { return "https://openalex.org/" + a; });
+    var au = (w.authorships || []).map(function (a) { var n = esc(a.author && a.author.display_name || ""); return me.indexOf(a.author && a.author.id) >= 0 ? "<b>" + n + "</b>" : n; });
+    if (au.length > 6) au = au.slice(0, 5).concat(["… " + au[au.length - 1]]);
+    var src = w.primary_location && w.primary_location.source ? w.primary_location.source.display_name : "";
+    var href = w.doi || (w.primary_location && w.primary_location.landing_page_url) || w.id;
+    return '<li class="lw"><span class="lw-date">' + esc((w.publication_date || "").slice(0, opt && opt.day ? 10 : 7)) + '</span><div><a class="lw-t" href="' + esc(href) + '" target="_blank" rel="noopener">' + esc(w.display_name || w.title) + '</a><div class="lw-a">' + au.join(", ") + '</div><div class="lw-m">' + (src ? "<i>" + esc(src) + "</i>" : "") +
+      (opt && opt.cites ? ' · <span class="lw-c">' + fmtN(w.cited_by_count) + " " + L3("citations", "sitasi", "被引用") + "</span>" : "") + "</div></div></li>";
+  }
+  function liveBadge(t) { return '<div class="news-live"><i></i>' + esc(t) + "</div>"; }
+  var WSEL = "select=id,doi,display_name,publication_date,primary_location,cited_by_count,authorships";
+
+  /* 1) PI publication profile: metrics, citations per year, latest / most-cited works */
+  R.scholar = function (el) {
+    var A = (LV.authors || []).join("|"); if (!A) return;
+    var mode = el._mode || "new", lim = +el.getAttribute("data-limit") || 10;
+    if (!el._init) { el._init = 1; el.innerHTML = '<div class="live-skel">' + esc(L3("Loading live publication data…", "Memuat data publikasi terbaru…", "最新の論文データを読み込み中…")) + "</div>"; }
+    Promise.all([
+      oa("authors?filter=id:" + A + "&select=id,works_count,cited_by_count,summary_stats,counts_by_year&per_page=10"),
+      oa("works?filter=authorships.author.id:" + A + "&sort=" + (mode === "new" ? "publication_date" : "cited_by_count") + ":desc&per_page=" + lim + "&" + WSEL)
+    ]).then(function (res) {
+      var au = res[0].results || [], main = au[0] || {}, works = res[1].results || [];
+      var tw = 0, tc = 0; au.forEach(function (a) { tw += a.works_count || 0; tc += a.cited_by_count || 0; });
+      var st = main.summary_stats || {}, yrs = (main.counts_by_year || []).slice().sort(function (a, b) { return a.year - b.year; }).slice(-10);
+      var mx = Math.max.apply(null, yrs.map(function (y) { return y.cited_by_count; }).concat([1]));
+      var tiles = [[fmtN(tw), L3("Works indexed", "Karya terindeks", "論文数")], [fmtN(tc), L3("Citations", "Sitasi", "被引用数")], [st.h_index || "–", "h-index"], [st.i10_index || "–", "i10-index"]];
+      var links = ((E.pi || {}).links || []).filter(function (l) { return /scholar|scopus|orcid|web of science|researcherid|wos/i.test(l[0]); });
+      el.innerHTML = liveBadge(L3("Live · updated automatically from OpenAlex (Scopus/WoS-indexed sources, ORCID-linked)", "Live · diperbarui otomatis dari OpenAlex (sumber terindeks Scopus/WoS, terhubung ORCID)", "ライブ · OpenAlexから自動更新（Scopus/WoS収録誌、ORCID連携）")) +
+        '<div class="live-stats">' + tiles.map(function (t) { return '<div><b data-count="' + esc(String(t[0]).replace(/\D/g, "")) + '">' + esc(t[0]) + "</b><span>" + esc(t[1]) + "</span></div>"; }).join("") + "</div>" +
+        '<div class="live-cite"><div class="live-cite-h">' + esc(L3("Citations per year", "Sitasi per tahun", "年別被引用数")) + '</div><div class="live-bars">' + yrs.map(function (y) { return '<div title="' + y.year + ": " + y.cited_by_count + '"><em>' + y.cited_by_count + '</em><i style="height:' + Math.max(3, Math.round(y.cited_by_count / mx * 80)) + 'px"></i><span>' + String(y.year).slice(2) + "</span></div>"; }).join("") + "</div></div>" +
+        '<div class="chips live-tabs"><button class="chip" data-m="new" aria-pressed="' + (mode === "new") + '">' + esc(L3("Latest", "Terbaru", "最新")) + '</button><button class="chip" data-m="top" aria-pressed="' + (mode === "top") + '">' + esc(L3("Most cited", "Paling banyak disitasi", "被引用順")) + "</button>" +
+        links.map(function (l) { return '<a class="chip" href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + " ↗</a>"; }).join("") + "</div>" +
+        '<ol class="live-works">' + works.map(function (w) { return workHtml(w, { cites: true }); }).join("") + "</ol>";
+      $$(".live-tabs button", el).forEach(function (b) { b.onclick = function () { el._mode = b.getAttribute("data-m"); R.scholar(el); }; });
+    }).catch(function (e) { if (window.console) console.warn("live block failed", e); el.innerHTML = ""; });
+  };
+
+  /* 2) Research radar: newest papers worldwide on the lab's themes */
+  R.radar = function (el) {
+    var Q = LV.radar || {}, t = el.getAttribute("data-topic"), lim = +el.getAttribute("data-limit") || 6;
+    var keys = t ? [t] : AREA_ORDER.filter(function (k) { return Q[k]; });
+    var today = new Date().toISOString().slice(0, 10);
+    var from = new Date(Date.now() - (+el.getAttribute("data-days") || 180) * 864e5).toISOString().slice(0, 10);
+    if (!el._init) { el._init = 1; el.innerHTML = '<div class="live-skel">' + esc(L3("Scanning recent literature…", "Memindai literatur terbaru…", "最新文献を検索中…")) + "</div>"; }
+    /* ONE request for all themes (cheap, avoids rate limits); papers are sorted into themes by title phrase */
+    var all = []; keys.forEach(function (k) { [].concat(Q[k]).forEach(function (p) { if (all.indexOf(p) < 0) all.push(p); }); });
+    var q = all.map(function (p) { return '"' + p + '"'; }).join(" OR ");
+    oa("works?search=" + encodeURIComponent(q) + "&filter=from_publication_date:" + from + ",to_publication_date:" + today + ",type:article,has_doi:true,primary_location.source.type:journal&sort=publication_date:desc&per_page=200&" + WSEL).then(function (d) {
+      var seen = {}, bins = {}; keys.forEach(function (k) { bins[k] = []; });
+      (d.results || []).forEach(function (w) {
+        var tt = String(w.display_name || "").toLowerCase().replace(/<[^>]+>/g, "");
+        if (seen[tt]) return; seen[tt] = 1;
+        for (var i = 0; i < keys.length; i++) if ([].concat(Q[keys[i]]).some(function (p) { return tt.indexOf(p.toLowerCase()) >= 0; })) { if (bins[keys[i]].length < lim) bins[keys[i]].push(w); break; }
+      });
+      return keys.map(function (k) { return [k, bins[k]]; });
+    })
+      .then(function (res) {
+        var head = liveBadge(L3("Live · newest peer-reviewed articles, refreshed automatically from OpenAlex", "Live · artikel ilmiah terbaru, diperbarui otomatis dari OpenAlex", "ライブ · OpenAlexから自動更新される最新の査読論文"));
+        if (keys.length === 1) { el.innerHTML = head + '<ol class="live-works radar">' + res[0][1].map(function (w) { return workHtml(w, { day: true }); }).join("") + "</ol>"; return; }
+        el.innerHTML = head + '<div class="radar-grid">' + res.map(function (r) { var a = (E.areas || {})[r[0]] || {}; return '<div class="radar-col ' + r[0] + '"><h3><a href="' + esc(a.page || "#") + '">' + esc(tr(a.name)) + '</a></h3><ol class="live-works radar">' + r[1].map(function (w) { return workHtml(w, { day: true }); }).join("") + "</ol></div>"; }).join("") + "</div>";
+      }).catch(function (e) { if (window.console) console.warn("live block failed", e); el.innerHTML = ""; });
+  };
+
+  /* 3) Instagram @etcitb */
+  R.insta = function (el) {
+    if (el._done) return; el._done = 1;
+    var I = LV.instagram || {}, h = (L.instagram || "https://www.instagram.com/etcitb/");
+    function addScript(src, mod, cb) { var s = document.createElement("script"); s.src = src; if (mod) s.type = "module"; s.async = true; if (cb) s.onload = cb; document.body.appendChild(s); }
+    if (I.beholdFeedId) { el.innerHTML = '<behold-widget feed-id="' + esc(I.beholdFeedId) + '"></behold-widget>'; addScript("https://w.behold.so/widget.js", true); return; }
+    if (I.widgetIframe) { el.innerHTML = '<iframe class="insta-frame" src="' + esc(I.widgetIframe) + '" loading="lazy" title="Instagram @etcitb" scrolling="no"></iframe>'; return; }
+    if ((I.posts || []).length) {
+      el.innerHTML = '<div class="insta-posts">' + I.posts.map(function (p) { return '<blockquote class="instagram-media" data-instgrm-permalink="' + esc(p) + '" data-instgrm-version="14"><a href="' + esc(p) + '" target="_blank" rel="noopener">Instagram @etcitb</a></blockquote>'; }).join("") + "</div>";
+      addScript("https://www.instagram.com/embed.js", false, function () { if (window.instgrm) window.instgrm.Embeds.process(); }); return;
+    }
+    el.innerHTML = '<a class="insta-card" href="' + esc(h) + '" target="_blank" rel="noopener"><span class="insta-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/></svg></span><span><b>@etcitb</b><small>' + esc(L3("Lab life, events and research highlights. Follow us on Instagram →", "Kegiatan lab, acara, dan sorotan riset. Ikuti kami di Instagram →", "研究室の日常・イベント・研究ハイライト。Instagramでフォロー →")) + "</small></span></a>";
+  };
+
   function renderAll() {
     $$("[data-render]").forEach(function (el) { var k = el.getAttribute("data-render"); if (R[k]) { try { R[k](el); } catch (err) { el.innerHTML = '<p class="muted">Could not load this section.</p>'; if (window.console) console.error(k, err); } } });
     $$("[data-setlang]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-setlang") === LANG); });
